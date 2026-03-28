@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Annual Planner</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23534AB7'/><text x='50' y='66' font-size='48' text-anchor='middle' fill='white' font-family='system-ui' font-weight='700'>P</text></svg>">
+<style>
+:root{--bg:#fff;--bg2:#f7f7f5;--bg3:#efeeec;--tx:#1a1a1a;--tx2:#65645f;--tx3:#9e9d99;--bd:#e8e7e4;--bd2:#d4d3d0;--acc:#534AB7;--acc2:#EEEDFE;--acct:#3C3489;--r:8px;--r2:12px;--font:system-ui,-apple-system,'Segoe UI',sans-serif;--mono:'SF Mono',ui-monospace,'Cascadia Code',monospace;--SW:220px}
+@media(prefers-color-scheme:dark){:root{--bg:#1c1c1c;--bg2:#232323;--bg3:#2a2a2a;--tx:#e4e4e0;--tx2:#8e8d89;--tx3:#5e5d59;--bd:#333;--bd2:#444;--acc2:#2d2856;--acct:#CECBF6}}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body,#root{height:100%;overflow:hidden}
+body{font-family:var(--font);background:var(--bg2);color:var(--tx);font-size:14px;-webkit-font-smoothing:antialiased}
+input,textarea,select{font-family:inherit;font-size:13px;padding:7px 10px;border-radius:var(--r);border:.5px solid var(--bd);background:var(--bg);color:var(--tx);outline:none}
+input:focus,textarea:focus{border-color:var(--acc)}
+button{font-family:inherit;cursor:pointer}
+#sidebar{position:fixed;left:0;top:0;bottom:0;width:var(--SW);background:var(--bg);border-right:.5px solid var(--bd);display:flex;flex-direction:column;z-index:50}
+#main{margin-left:var(--SW);height:100vh;overflow-y:auto}
+.inner{max-width:860px;margin:0 auto;padding:28px 32px 60px}
+.ptitle{font-size:20px;font-weight:600;margin-bottom:20px}
+.logo{padding:20px 18px 18px;font-size:15px;font-weight:600;color:var(--acc);display:flex;align-items:center;gap:8px}
+.logo-i{width:28px;height:28px;background:var(--acc);color:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
+.snav{padding:0 10px;flex:1}
+.nb{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--r);font-size:13px;color:var(--tx2);margin-bottom:2px;border:none;background:none;width:100%;text-align:left;cursor:pointer}
+.nb:hover{background:var(--bg2)}
+.nb.on{background:var(--acc2);color:var(--acct);font-weight:500}
+.dz{margin:12px;padding:22px 12px;border:1.5px dashed var(--bd2);border-radius:var(--r2);text-align:center;color:var(--tx3);font-size:11px;cursor:pointer;transition:all .15s}
+.dz:hover,.dz.ov{border-color:var(--acc);color:var(--acc);background:var(--acc2)}
+.sf{padding:12px 16px;border-top:.5px solid var(--bd);font-size:10px;color:var(--tx3)}
+.badge{display:inline-block;padding:1px 7px;border-radius:5px;font-size:10px;font-weight:600;letter-spacing:.2px;line-height:1.7}
+.cdot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
+.stats{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.st{background:var(--bg);border:.5px solid var(--bd);border-radius:var(--r2);padding:14px 18px;flex:1;min-width:90px}
+.st small{font-size:11px;color:var(--tx2);display:block}
+.st b{font-size:22px;font-weight:600}
+.card{background:var(--bg);border:.5px solid var(--bd);border-radius:var(--r2);overflow:hidden}
+.chdr{display:grid;grid-template-columns:28px 1fr 52px 40px 56px 24px;gap:6px;padding:6px 14px;font-size:10px;color:var(--tx3);font-weight:500;text-transform:uppercase;letter-spacing:.4px;border-bottom:.5px solid var(--bd2)}
+.tr{display:grid;grid-template-columns:28px 1fr 52px 40px 56px 24px;gap:6px;align-items:center;padding:9px 14px;border-bottom:.5px solid var(--bd);transition:background .08s}
+.tr:hover{background:var(--bg2)}
+.tr.dn{opacity:.3}
+.tn{font-size:13px;font-weight:500;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tn:hover{color:var(--acc)}
+.ts{font-size:11px;color:var(--tx2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tm{font-size:10px;color:var(--tx3)}
+.th{font-size:11px;color:var(--tx2);text-align:right}
+.td{background:none;border:none;color:var(--tx3);font-size:13px;opacity:0;transition:opacity .1s;cursor:pointer}
+.tr:hover .td{opacity:1}
+.ar{padding:10px 14px;color:var(--tx3);font-size:12px;cursor:pointer}
+.ar:hover{background:var(--bg2);color:var(--acc)}
+.ov2{position:fixed;inset:0;background:rgba(0,0,0,.32);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}
+.mdl{background:var(--bg);border-radius:var(--r2);padding:24px;width:100%;max-width:460px;border:.5px solid var(--bd2)}
+.mdl h3{font-size:16px;font-weight:600;margin-bottom:16px;display:flex;justify-content:space-between}
+.mg{display:grid;gap:10px}
+.mr2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.mdl label{font-size:10px;color:var(--tx2);margin-bottom:2px;display:block}
+.msv{width:100%;padding:10px;border:none;border-radius:var(--r);background:var(--acc);color:#fff;font-weight:500;font-size:13px;cursor:pointer;margin-top:4px}
+.gw{overflow-x:auto;margin-bottom:8px}
+.gg{display:grid;font-size:12px}
+.gl{padding:8px 4px;border-bottom:.5px solid var(--bd);display:flex;align-items:center;gap:5px;font-weight:500;font-size:11px}
+.gt{position:relative;border-bottom:.5px solid var(--bd);overflow:hidden}
+.gb{position:absolute;border-radius:3px;cursor:pointer;transition:opacity .1s}
+.gb:hover{opacity:1!important}
+.gk{position:absolute;top:0;bottom:0;border-left:.5px solid var(--bd)}
+.gn{position:absolute;top:0;bottom:0;border-left:2px dashed #E24B4A;opacity:.5;z-index:2}
+.gh{padding:7px 0;border-bottom:.5px solid var(--bd2);color:var(--tx2);font-size:10px;font-weight:500}
+.mtx{display:flex;gap:3px;margin-bottom:16px;flex-wrap:wrap}
+.mtb{padding:5px 11px;font-size:11px;border-radius:6px;border:.5px solid var(--bd);background:none;color:var(--tx2);cursor:pointer}
+.mtb:hover{background:var(--bg)}
+.mtb.on{background:var(--acc2);color:var(--acct);border-color:transparent;font-weight:500}
+.mg2{background:var(--bg);border:.5px solid var(--bd);border-radius:var(--r2);padding:12px 14px;margin-bottom:16px}
+.mgr{display:grid;grid-template-columns:80px 1fr;align-items:center;height:22px;font-size:10px;color:var(--tx2)}
+.mgb{position:absolute;top:2px;height:10px;border-radius:3px}
+.cb{margin-bottom:8px;padding:8px 12px;border-radius:var(--r);font-size:12px;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+.cb.u{background:var(--bg);border:.5px solid var(--bd)}
+.cb.a{border-left:2px solid var(--acc);padding-left:12px}
+.cr{display:flex;gap:6px;margin-top:8px}
+.cbt{padding:7px 14px;border-radius:var(--r);border:.5px solid var(--bd);background:var(--bg);color:var(--tx);font-size:12px;font-weight:500}
+.cbt:hover{background:var(--bg3)}
+.kb{padding:10px 14px;background:var(--bg);border:.5px solid var(--bd);border-radius:var(--r);margin-bottom:12px;display:flex;gap:6px}
+.kb input{flex:1}
+.dp{border:.5px solid var(--bd2);border-radius:var(--r);padding:12px;margin-bottom:8px;background:var(--bg)}
+.pb{width:100%;padding:7px;margin-top:4px;border-radius:var(--r);border:.5px solid var(--bd2);font-weight:500;font-size:11px;background:var(--acc2);color:var(--acct);cursor:pointer}
+.empty{padding:40px 20px;text-align:center;color:var(--tx3)}
+.empty b{display:block;font-size:16px;color:var(--tx2);margin-bottom:8px}
+@media(max-width:700px){#sidebar{width:56px}#main{margin-left:56px}.logo>:not(.logo-i){display:none}.logo{padding:14px 10px;justify-content:center}.nb{padding:8px;justify-content:center}.nb>:last-child{display:none}.dz{padding:10px;font-size:0}.dz::after{content:"MD";font-size:9px}.inner{padding:16px}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<script type="text/babel">
+const{useState,useEffect,useRef,useCallback}=React;
+
+const DEMO=[
+{id:"d1",name:"Conference paper submission",desc:"Final review / format figures / submit",priority:"p0+",category:"academic",start:"2026-04-01",end:"2026-04-05",hours:"12",done:false},
+{id:"d2",name:"Thesis chapter 1 draft",desc:"Introduction / literature review / methodology",priority:"p0",category:"thesis",start:"2026-04-10",end:"2026-05-15",hours:"40",done:false},
+{id:"d3",name:"Experiment batch A",desc:"Run simulations / collect data / generate plots",priority:"p0",category:"thesis",start:"2026-05-01",end:"2026-06-15",hours:"60",done:false},
+{id:"d4",name:"Annual review report",desc:"Progress summary / future plan / supervisor meeting",priority:"p0",category:"academic",start:"2026-05-01",end:"2026-05-20",hours:"15",done:false},
+{id:"d5",name:"Update CV and portfolio",desc:"Add recent publications / projects / skills",priority:"p1",category:"career",start:"2026-06-01",end:"2026-06-15",hours:"8",done:false},
+{id:"d6",name:"Exercise routine",desc:"Daily movement / gym or walk / never break chain",priority:"p1",category:"life",start:"2026-04-01",end:"2026-12-31",hours:"daily",done:false},
+{id:"d7",name:"Side project prototype",desc:"Build MVP / write docs / no scope creep",priority:"p2",category:"side",start:"2026-06-01",end:"2026-12-31",hours:"50",done:false},
+];
+
+const PRI=["p0+","p0","p1","p2","new"],CATS=["thesis","academic","career","platform","life","side"];
+const PL={"p0+":"P0+",p0:"P0",p1:"P1",p2:"P2","new":"NEW"};
+const CL={thesis:"Thesis",academic:"Academic",career:"Career+Visa",platform:"Platform",life:"Life",side:"Side"};
+const CH={thesis:"#D85A30",academic:"#534AB7",career:"#378ADD",platform:"#1D9E75",life:"#888780",side:"#7F77DD"};
+const dk=window.matchMedia("(prefers-color-scheme:dark)").matches;
+const PB={"p0+":[dk?"#501313":"#FCEBEB",dk?"#F7C1C1":"#791F1F"],p0:[dk?"#4A1B0C":"#FAECE7",dk?"#F5C4B3":"#712B13"],p1:[dk?"#042C53":"#E6F1FB",dk?"#B5D4F4":"#0C447C"],p2:[dk?"#26215C":"#EEEDFE",dk?"#CECBF6":"#3C3489"],"new":[dk?"#04342C":"#E1F5EE",dk?"#9FE1CB":"#085041"]};
+const MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const toD=s=>new Date(s+"T00:00:00"),fD=d=>d.toISOString().split("T")[0],gM=s=>toD(s).getMonth()+1,gId=()=>"t"+Date.now()+Math.random().toString(36).slice(2,5);
+const sortP=a=>[...a].sort((x,y)=>{const px=PRI.indexOf(x.priority),py=PRI.indexOf(y.priority);return px!==py?px-py:toD(x.end)-toD(y.end);});
+const now=new Date();const TODAY=fD(now);const CUR_YEAR=now.getFullYear();const CUR_MONTH=now.getMonth()+1;
+const pct=ds=>{const s=new Date(CUR_YEAR,0,1),e=new Date(CUR_YEAR,11,31);return Math.max(0,Math.min(100,(toD(ds)-s)/864e5/((e-s)/864e5)*100));};
+const dHrs=t=>{if(!t.hours||t.hours==="daily")return 1;const h=parseFloat(t.hours);if(isNaN(h))return 1;const span=Math.max(1,Math.round((toD(t.end)-toD(t.start))/864e5));return Math.round(h/span*10)/10;};
+const load=()=>{try{return JSON.parse(localStorage.getItem("planner_data"));}catch{return null;}};
+const persist=t=>{try{localStorage.setItem("planner_data",JSON.stringify(t));}catch{}};
+const Bdg=({p})=>{const c=PB[p];return c?<span className="badge" style={{background:c[0],color:c[1]}}>{PL[p]}</span>:null;};
+const CDot=({c})=><span className="cdot" style={{background:CH[c]||"#888"}}/>;
+
+function Modal({task,onSave,onClose}){
+  const[f,sf]=useState(task||{id:gId(),name:"",desc:"",priority:"p1",category:"thesis",start:TODAY,end:TODAY,hours:"",done:false});
+  const u=(k,v)=>sf(p=>({...p,[k]:v}));
+  return <div className="ov2" onClick={e=>{if(e.target===e.currentTarget)onClose()}}>
+    <div className="mdl"><h3><span>{task?"Edit task":"New task"}</span><button onClick={onClose} style={{background:"none",border:"none",fontSize:18,color:"var(--tx2)",cursor:"pointer"}}>x</button></h3>
+    <div className="mg">
+      <div><label>Name</label><input value={f.name} onChange={e=>u("name",e.target.value)} style={{width:"100%"}} placeholder="Task name"/></div>
+      <div><label>Description</label><textarea value={f.desc} onChange={e=>u("desc",e.target.value)} rows={2} placeholder="Subtasks, deliverables, notes..." style={{width:"100%",fontFamily:"inherit",fontSize:13,padding:"7px 10px",borderRadius:"var(--r)",border:".5px solid var(--bd)",background:"var(--bg)",color:"var(--tx)",resize:"vertical"}}/></div>
+      <div className="mr2"><div><label>Start date</label><input type="date" value={f.start} onChange={e=>u("start",e.target.value)} style={{width:"100%"}}/></div><div><label>End date</label><input type="date" value={f.end} onChange={e=>u("end",e.target.value)} style={{width:"100%"}}/></div></div>
+      <div className="mr3"><div><label>Priority</label><select value={f.priority} onChange={e=>u("priority",e.target.value)} style={{width:"100%"}}>{PRI.map(p=><option key={p} value={p}>{PL[p]}</option>)}</select></div><div><label>Category</label><select value={f.category} onChange={e=>u("category",e.target.value)} style={{width:"100%"}}>{CATS.map(c=><option key={c} value={c}>{CL[c]}</option>)}</select></div><div><label>Total hours</label><input value={f.hours} onChange={e=>u("hours",e.target.value)} placeholder='e.g. 20 or "daily"' style={{width:"100%"}}/></div></div>
+      <button className="msv" onClick={()=>{if(f.name.trim())onSave(f)}}>{task?"Save changes":"Add task"}</button>
+    </div></div></div>;
+}
+
+function App(){
+  const[tasks,setTasks]=useState(()=>load()||DEMO);
+  const[view,setView]=useState("tasks");
+  const[month,setMonth]=useState(CUR_MONTH);
+  const[ed,setEd]=useState(null);
+  const[drop,setDrop]=useState(false);
+  const[chatMsgs,setChatMsgs]=useState([{r:"a",t:"Welcome! You can:\n\n1. Chat to add/edit/remove tasks\n2. Drop a .md file in the sidebar to bulk-import\n3. Paste markdown and click 'Parse and sync'\n\nExamples:\n- \"Add task: literature review, P0, thesis, May 1-31, 20h\"\n- \"Move conference submission to April 10\"\n- \"Delete the exercise task\""}]);
+  const[chatInp,setChatInp]=useState("");
+  const[chatLd,setChatLd]=useState(false);
+  const[apiKey,setApiKey]=useState(()=>localStorage.getItem("planner_key")||"");
+  const[showKey,setShowKey]=useState(false);
+  const[docMode,setDocMode]=useState(false);
+  const[docTxt,setDocTxt]=useState("");
+  const chatEnd=useRef(null);
+  useEffect(()=>{chatEnd.current?.scrollIntoView({behavior:"smooth"});},[chatMsgs]);
+
+  const save=useCallback(nt=>{setTasks(nt);persist(nt);},[]);
+  const tog=id=>save(tasks.map(t=>t.id===id?{...t,done:!t.done}:t));
+  const del=id=>{if(confirm("Delete this task?"))save(tasks.filter(t=>t.id!==id));};
+  const openEd=t=>setEd(t===null?{id:gId(),name:"",desc:"",priority:"p1",category:"thesis",start:TODAY,end:TODAY,hours:"",done:false}:t);
+  const saveEd=f=>{const ex=tasks.find(t=>t.id===f.id);save(ex?tasks.map(t=>t.id===f.id?f:t):[...tasks,f]);setEd(null);};
+
+  const chatCall=async(content,display)=>{
+    if(!apiKey){setShowKey(true);setChatMsgs(v=>[...v,{r:"a",t:"Please set your Anthropic API key first."}]);return;}
+    setChatLd(true);setChatMsgs(v=>[...v,{r:"u",t:display}]);
+    const SYS=`You are a planning assistant. Current tasks: ${JSON.stringify(tasks.map(t=>({id:t.id,name:t.name,priority:t.priority,category:t.category,start:t.start,end:t.end,hours:t.hours,done:t.done})))}
+Respond with JSON only: {"reply":"...","actions":[{"type":"add","task":{"name":"...","desc":"...","priority":"p0","category":"thesis","start":"2026-05-01","end":"2026-05-10","hours":"10"}},{"type":"update","id":"...","changes":{"end":"2026-04-02"}},{"type":"delete","id":"..."}]}
+Valid priorities: p0+, p0, p1, p2, new. Valid categories: thesis, academic, career, platform, life, side. Hours should be a number string. When given a markdown document, diff against current tasks: add new ones, update changed ones, delete removed ones. Reply in the same language the user uses. Return only valid JSON, no markdown fences.`;
+    try{
+      const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":apiKey,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,system:SYS,messages:[{role:"user",content}]})});
+      const data=await r.json();const text=(data.content||[]).map(c=>c.text||"").join("");const clean=text.replace(/```json\n?|```\n?/g,"").trim();
+      let p;try{p=JSON.parse(clean);}catch{setChatMsgs(v=>[...v,{r:"a",t:text||"Failed to parse response."}]);setChatLd(false);return;}
+      let nt=[...tasks];
+      if(p.actions)for(const a of p.actions){if(a.type==="add"&&a.task)nt.push({...a.task,id:gId(),done:false});else if(a.type==="update"&&a.id&&a.changes)nt=nt.map(t=>t.id===a.id?{...t,...a.changes}:t);else if(a.type==="delete"&&a.id)nt=nt.filter(t=>t.id!==a.id);}
+      save(nt);
+      const acts=p.actions||[];setChatMsgs(v=>[...v,{r:"a",t:(p.reply||text)+(acts.length?`\n[+${acts.filter(a=>a.type==="add").length} ~${acts.filter(a=>a.type==="update").length} -${acts.filter(a=>a.type==="delete").length}]`:"")}]);
+    }catch(e){setChatMsgs(v=>[...v,{r:"a",t:"Error: "+e.message}]);}
+    setChatLd(false);
+  };
+
+  const handleFile=file=>{if(!file)return;const r=new FileReader();r.onload=e=>{setDocTxt(e.target.result);setDocMode(true);setView("chat");};r.readAsText(file);};
+
+  const sorted=sortP(tasks);
+  const totalH=tasks.reduce((s,t)=>{const h=parseFloat(t.hours);return s+(isNaN(h)?0:h);},0);
+  const mt=sortP(tasks.filter(t=>gM(t.start)<=month&&gM(t.end)>=month));
+  const dim=new Date(CUR_YEAR,month,0).getDate();
+  const mtH=mt.reduce((s,t)=>{const h=parseFloat(t.hours);return s+(isNaN(h)?0:h);},0);
+  const g={};CATS.forEach(c=>{g[c]=sortP(tasks.filter(t=>t.category===c));});
+
+  return <div>
+    <div id="sidebar">
+      <div className="logo"><span className="logo-i">P</span>Planner</div>
+      <div className="snav">
+        {[["tasks","\u2630","All tasks"],["year","\u2501","Year overview"],["month","\u25A6","Month detail"],["chat","\u2709","Chat / Import"]].map(([id,icon,label])=>
+          <button key={id} className={"nb"+(view===id?" on":"")} onClick={()=>setView(id)}><span style={{width:18,textAlign:"center",fontSize:15,opacity:.7}}>{icon}</span><span>{label}</span></button>
+        )}
+      </div>
+      <div className={"dz"+(drop?" ov":"")} onDragOver={e=>{e.preventDefault();setDrop(true)}} onDragLeave={()=>setDrop(false)} onDrop={e=>{e.preventDefault();setDrop(false);handleFile(e.dataTransfer.files?.[0])}} onClick={()=>{const i=document.createElement("input");i.type="file";i.accept=".md,.txt,.markdown";i.onchange=e=>handleFile(e.target.files?.[0]);i.click();}}>
+        Drop .md here<br/>or click to upload
+      </div>
+      <div className="sf">{tasks.length} tasks · {tasks.filter(t=>t.done).length} done<br/><a href="#" onClick={e=>{e.preventDefault();if(confirm("Reset to demo tasks?"))save(DEMO)}} style={{color:"var(--tx3)"}}>Reset to demo</a> · <a href="#" onClick={e=>{e.preventDefault();if(confirm("Clear all tasks?"))save([])}} style={{color:"var(--tx3)"}}>Clear all</a></div>
+    </div>
+
+    <div id="main"><div className="inner">
+
+    {view==="tasks"&&<div>
+      <div className="ptitle">All tasks</div>
+      {tasks.length===0?<div className="empty"><b>No tasks yet</b>Click "+ New task" below, or drop a .md file in the sidebar to get started.</div>:null}
+      {tasks.length>0&&<>
+      <div className="stats">{[["Total",tasks.length],["Est. hours",Math.round(totalH)],["Completed",tasks.filter(t=>t.done).length]].map(([l,v])=><div key={l} className="st"><small>{l}</small><b>{v}</b></div>)}</div>
+      <div className="card">
+        <div className="chdr"><span></span><span>Task</span><span>Priority</span><span>Cat</span><span style={{textAlign:"right"}}>Hours</span><span></span></div>
+        {sorted.map(t=><div key={t.id} className={"tr"+(t.done?" dn":"")}>
+          <input type="checkbox" checked={t.done} onChange={()=>tog(t.id)} style={{cursor:"pointer",accentColor:CH[t.category]}}/>
+          <div style={{minWidth:0,overflow:"hidden"}}><div className="tn" style={{textDecoration:t.done?"line-through":"none"}} onClick={()=>openEd(t)}>{t.name}</div><div className="ts">{t.desc}</div><div className="tm">{t.start} ~ {t.end}{t.hours!=="daily"?` · ~${dHrs(t)}h/day`:""}</div></div>
+          <Bdg p={t.priority}/><CDot c={t.category}/><div className="th">{t.hours==="daily"?"daily":t.hours+"h"}</div>
+          <button className="td" onClick={()=>del(t.id)}>x</button>
+        </div>)}
+        <div className="ar" onClick={()=>openEd(null)}>+ New task</div>
+      </div></>}
+      {tasks.length===0&&<div className="card"><div className="ar" onClick={()=>openEd(null)}>+ New task</div></div>}
+    </div>}
+
+    {view==="year"&&<div>
+      <div className="ptitle">Year overview — {CUR_YEAR}</div>
+      {tasks.length===0?<div className="empty"><b>No tasks to display</b>Add tasks first, then come back here.</div>:
+      <><div className="gw"><div style={{minWidth:700}}>
+        <div className="gg" style={{gridTemplateColumns:"110px minmax(0,1fr)"}}>
+          <div className="gh">Threads</div>
+          <div className="gh" style={{position:"relative",height:26}}>{MONTHS.map((m,i)=>{const d=new Date(CUR_YEAR,i,1);return <span key={m} style={{position:"absolute",left:`calc(${pct(fD(d))}% + 3px)`,top:5}}>{m}</span>})}</div>
+          {CATS.map(c=>{
+            const ct=g[c]||[];
+            if(!ct.length)return null;
+            return[
+            <div key={c+"l"} className="gl"><CDot c={c}/><span>{CL[c]}</span></div>,
+            <div key={c+"r"} className="gt" style={{height:36}}>
+              {MONTHS.map((m,i)=><div key={m} className="gk" style={{left:`${pct(fD(new Date(CUR_YEAR,i,1)))}%`}}/>)}
+              {ct.map(t=>{const l=pct(t.start),w=Math.max(pct(t.end)-l,0.5);return <div key={t.id} className="gb" title={`${t.name}\n${PL[t.priority]} | ${t.hours}h`} onClick={()=>openEd(t)} style={{top:8,left:`${l}%`,width:`${w}%`,height:18,background:CH[c],opacity:t.done?.15:t.priority==="p0+"?1:t.priority==="p0"?.75:.45}}/>})}
+              <div className="gn" style={{left:`${pct(TODAY)}%`}}/>
+            </div>
+          ]})}
+        </div>
+      </div></div>
+      <div style={{display:"flex",gap:14,marginTop:8,fontSize:10,color:"var(--tx2)",flexWrap:"wrap"}}>
+        {CATS.filter(c=>(g[c]||[]).length>0).map(c=><span key={c} style={{display:"flex",alignItems:"center",gap:4}}><CDot c={c}/>{CL[c]}</span>)}
+        <span style={{display:"flex",alignItems:"center",gap:4}}><span style={{width:12,borderTop:"2px dashed #E24B4A"}}/> Today</span>
+      </div></>}
+    </div>}
+
+    {view==="month"&&<div>
+      <div className="ptitle">Month detail</div>
+      <div className="mtx">{MONTHS.map((m,i)=><button key={m} className={"mtb"+(month===i+1?" on":"")} onClick={()=>setMonth(i+1)}>{m}</button>)}</div>
+      {mt.length===0?<div className="empty"><b>No tasks in {MONTHS[month-1]}</b>Try a different month or add tasks.</div>:<>
+      <div className="stats">{[["Tasks",mt.length],["Hours",Math.round(mtH)],["Done",mt.filter(t=>t.done).length+"/"+mt.length]].map(([l,v])=><div key={l} className="st"><small>{l}</small><b>{v}</b></div>)}</div>
+      <div className="mg2">{mt.map(t=>{const ms=new Date(CUR_YEAR,month-1,1),me=new Date(CUR_YEAR,month-1,dim);const ts=toD(t.start)<ms?ms:toD(t.start),te=toD(t.end)>me?me:toD(t.end);const left=(ts-ms)/864e5/dim*100,width=Math.max((te-ts)/864e5/dim*100,2);return <div key={t.id} className="mgr"><span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{t.name}</span><div style={{position:"relative",height:12}}><div className="mgb" style={{left:`${left}%`,width:`${width}%`,background:CH[t.category],opacity:t.done?.15:.75}}/></div></div>})}</div>
+      <div className="card">{mt.map(t=><div key={t.id} className={"tr"+(t.done?" dn":"")} style={{cursor:"pointer"}}>
+        <input type="checkbox" checked={t.done} onChange={()=>tog(t.id)} style={{cursor:"pointer",accentColor:CH[t.category]}}/>
+        <div style={{minWidth:0,overflow:"hidden"}} onClick={()=>openEd(t)}><div className="tn" style={{textDecoration:t.done?"line-through":"none"}}>{t.name}</div><div className="ts">{t.desc}</div><div className="tm">{t.start} ~ {t.end} · ~{dHrs(t)}h/day</div></div>
+        <Bdg p={t.priority}/><CDot c={t.category}/><div className="th">{t.hours==="daily"?"daily":t.hours+"h"}</div><span/>
+      </div>)}</div></>}
+    </div>}
+
+    {view==="chat"&&<div>
+      <div className="ptitle">Chat / Import</div>
+      {(showKey||!apiKey)&&<div className="kb"><input type="password" value={apiKey} onChange={e=>setApiKey(e.target.value)} placeholder="Anthropic API key (sk-ant-...) — stored locally only"/><button className="cbt" onClick={()=>{localStorage.setItem("planner_key",apiKey);setShowKey(false)}}>Save key</button></div>}
+      <div style={{minHeight:360}}>
+        <div style={{marginBottom:8}}>
+          {chatMsgs.map((m,i)=><div key={i} className={"cb "+(m.r==="u"?"u":"a")}>{m.t}</div>)}
+          {chatLd&&<div className="cb a" style={{color:"var(--tx3)"}}>Thinking...</div>}
+          <div ref={chatEnd}/>
+        </div>
+        {docMode&&<div className="dp">
+          <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}><span style={{fontSize:11,fontWeight:500}}>Document loaded — edit if needed, then parse</span><button onClick={()=>{setDocMode(false);setDocTxt("")}} style={{background:"none",border:"none",cursor:"pointer",color:"var(--tx3)"}}>x</button></div>
+          <textarea value={docTxt} onChange={e=>setDocTxt(e.target.value)} rows={8} style={{width:"100%",fontFamily:"var(--mono)",fontSize:11,padding:"8px",borderRadius:"var(--r)",border:".5px solid var(--bd)",background:"var(--bg2)",color:"var(--tx)",resize:"vertical"}}/>
+          <button className="pb" onClick={()=>{if(docTxt.trim()){chatCall(`Compare this document against my current tasks. Add new tasks, update changed ones, and delete removed ones:\n---\n${docTxt}\n---`,`[document] ${docTxt.slice(0,120)}...`);setDocMode(false);setDocTxt("")}}} disabled={chatLd}>Parse and sync tasks</button>
+        </div>}
+        <div className="cr">
+          <input value={chatInp} onChange={e=>setChatInp(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"&&chatInp.trim()&&!chatLd){const m=chatInp.trim();setChatInp("");chatCall(m,m)}}} placeholder="Type a message..." style={{flex:1}}/>
+          <button className="cbt" onClick={()=>{if(!docMode)setDocMode(true);else{const i=document.createElement("input");i.type="file";i.accept=".md,.txt";i.onchange=e=>{const f=e.target.files?.[0];if(f){const r=new FileReader();r.onload=ev=>{setDocTxt(ev.target.result);setDocMode(true)};r.readAsText(f)}};i.click()}}}>{docMode?"Upload file":"Paste / upload doc"}</button>
+          <button className="cbt" style={{fontWeight:600}} onClick={()=>{if(chatInp.trim()&&!chatLd){const m=chatInp.trim();setChatInp("");chatCall(m,m)}}} disabled={chatLd}>Send</button>
+        </div>
+      </div>
+    </div>}
+
+    </div></div>
+    {ed&&<Modal task={ed.name?ed:null} onClose={()=>setEd(null)} onSave={saveEd}/>}
+  </div>;
+}
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
