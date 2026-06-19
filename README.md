@@ -2,7 +2,6 @@
 
 A single-file task management app with Gantt charts, priority sorting, and AI-powered `.md` import.
 
-![Screenshot](screenshot.png)
 
 ## Features
 
